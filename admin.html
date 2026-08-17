@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#2B1D16" />
+    <meta name="robots" content="noindex, nofollow, noarchive" />
+    <title>Administración | Salvatore</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="admin.css" />
+  </head>
+  <body>
+    <header class="admin-header"><a href="index.html" class="admin-brand"><img src="assets/salvatore-pizza-logo.png" alt="Salvatore" /><span>Salvatore <i>Administración</i></span></a><a class="view-site" href="index.html" target="_blank" rel="noreferrer">Ver web clientes ↗</a></header>
+    <main>
+      <section id="loginView" class="login-view"><div class="login-card"><img src="assets/salvatore-pizza-logo.png" alt="Salvatore" /><p class="eyebrow">Acceso privado</p><h1>Equipo Salvatore</h1><p>Ingresa con el correo y contraseña del equipo administrador.</p><form id="loginForm"><label>Correo electrónico<input name="email" type="email" required autocomplete="email" placeholder="correo@ejemplo.cl" /></label><label>Contraseña<input name="password" type="password" required autocomplete="current-password" /></label><p id="loginError" class="login-error hidden"></p><button type="submit" class="save-button">Ingresar</button></form></div></section>
+      <section id="adminView" class="hidden">
+      <section class="intro"><p class="eyebrow">Panel de operación</p><h1>Disponibilidad de hoy</h1><p>Actualiza aquí la capacidad de la cocina. El aviso se mostrará a los clientes antes de hacer su pedido.</p></section>
+      <section class="dashboard-grid">
+        <form id="availabilityForm" class="panel settings-panel">
+          <h2>Estado de pedidos</h2>
+          <div class="status-options">
+            <label class="status-option available"><input type="radio" name="availability" value="available" checked /><span class="radio-dot"></span><span><b>Disponible</b><small>Recibimos pedidos normalmente.</small></span></label>
+            <label class="status-option busy"><input type="radio" name="availability" value="busy" /><span class="radio-dot"></span><span><b>Alta demanda</b><small>Hay pedidos pendientes en cocina.</small></span></label>
+            <label class="status-option closed"><input type="radio" name="availability" value="closed" /><span class="radio-dot"></span><span><b>Cupos agotados</b><small>No recibiremos más pedidos por ahora.</small></span></label>
+          </div>
+          <label class="field">Tiempo estimado<select name="wait"><option>25–35 min</option><option>35–45 min</option><option>45–60 min</option><option>60–75 min</option><option>A confirmar por WhatsApp</option></select></label>
+          <label class="field">Mensaje para clientes<input name="availabilityNote" placeholder="Ej. Volvemos a tomar pedidos a las 20:00" /></label>
+          <button class="save-button" type="submit">Guardar cambios</button>
+        </form>
+        <aside class="panel preview-panel"><p class="eyebrow">Vista previa cliente</p><h2>Así verán el estado</h2><div id="previewBanner" class="preview-banner available"><span id="previewIcon">●</span><p><b id="previewTitle">Pedidos disponibles</b><small id="previewDetail">Tiempo estimado: 25–35 min</small></p></div><div class="tip"><b>Consejo operativo</b><p>Usa rangos de tiempo. Actualízalos al iniciar una tanda nueva o cuando cambie la carga de pedidos.</p></div></aside>
+      </section>
+      <section class="panel guide"><h2>Guía rápida</h2><div><p><b>1. Disponible</b><span>Cuando la cocina puede recibir pedidos normalmente.</span></p><p><b>2. Alta demanda</b><span>Cuando debes aumentar el plazo por pedidos en cola.</span></p><p><b>3. Cupos agotados</b><span>Bloquea nuevos pedidos y evita expectativas equivocadas.</span></p></div></section>
+      <p class="local-note">Los cambios se guardan de forma segura y se comparten con la web de clientes.</p><button id="logoutButton" class="logout-button" type="button">Cerrar sesión</button>
+      </section>
+    </main>
+    <div id="toast" class="toast" role="status"></div>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="supabase-client.js"></script>
+    <script src="admin.js"></script>
+  </body>
+</html>

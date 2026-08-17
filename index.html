@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#2B1D16" />
+    <title>Salvatore | Pizzas & Waffles</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div id="welcome" class="welcome" aria-modal="true" role="dialog">
+      <p class="eyebrow">Hecho con cariño en Mulchén</p>
+      <h1>¿Qué se te antoja<br />hoy?</h1>
+      <p class="welcome-copy">Selecciona tu rincón favorito de Salvatore.</p>
+      <div class="portal-options">
+        <button class="portal pizza-portal" data-start="pizzas"><img src="assets/salvatore-pizza-logo.png" alt="Logo Salvatore Pizza" /><strong>Salvatore<br />Pizzas</strong><small>Artesanales &amp; Calidad</small></button>
+        <button class="portal waffle-portal" data-start="waffles"><img src="assets/salvatore-waffle-logo.jpg" alt="Logo Salvatore Waffle" /><strong>Salvatore<br />Waffles</strong><small>Calientitos &amp; Suaves</small></button>
+      </div>
+      <button class="link-button" id="skipWelcome">Ver todo el menú</button>
+    </div>
+
+    <header class="site-header">
+      <a class="brand" href="#inicio" aria-label="Salvatore, inicio"><img id="headerLogo" src="assets/salvatore-pizza-logo.png" alt="Logo Salvatore Pizza" /><span id="headerBrand">Salvatore</span><i id="headerSubtitle">Pizzas & Waffles</i></a>
+      <nav aria-label="Categorías">
+        <a href="#pizzas" data-category="pizzas">🍕 Pizzas</a>
+        <a href="#waffles" data-category="waffles">🧇 Waffles</a>
+        <a href="#bebidas" data-category="bebidas">🥤 Bebidas</a>
+      </nav>
+      <div class="header-actions"><button id="changeWorld" class="world-switch" type="button">Cambiar mundo</button><button id="cartButton" class="cart-button" aria-label="Abrir carrito">🛒 <b id="cartCount">0</b></button></div>
+    </header>
+    <section id="availabilityBanner" class="availability-banner available" aria-live="polite"><span id="availabilityIcon">●</span><p><b id="availabilityTitle">Pedidos disponibles</b><span id="availabilityDetail">Tiempo estimado: 25–35 min</span></p></section>
+
+    <main id="inicio">
+      <section class="hero">
+        <div class="hero-copy">
+          <p id="heroEyebrow" class="eyebrow">Campillo 920 · Mulchén</p>
+          <h2 id="heroTitle">El sabor que<br /><em>te hace volver.</em></h2>
+          <p id="heroDescription">Pizzas artesanales, waffles recién horneados y el cariño de siempre.</p>
+          <a id="heroButton" class="primary-button" href="#pizzas">Ver el menú <span>→</span></a>
+        </div>
+        <div class="hero-art" aria-hidden="true"><div id="heroFood" class="pizza-plate">🍕</div><span class="leaf leaf-one">✦</span><span class="leaf leaf-two">✦</span><p id="heroPrice">desde<br /><b>$6.500</b></p></div>
+      </section>
+
+      <section id="pizzas" class="menu-section">
+        <div class="section-heading"><div><p class="eyebrow">Nuestras favoritas</p><h2>🍕 Pizzas artesanales</h2><p>Medianas, ideales para compartir entre 2.</p></div><span class="stamp">Masa<br />hecha<br />a mano</span></div>
+        <div class="menu-grid" id="pizzaGrid"></div>
+      </section>
+
+      <section id="waffles" class="menu-section waffle-section">
+        <div class="section-heading"><div><p class="eyebrow">Para el momento dulce</p><h2>🧇 Waffles</h2><p>Horneados al momento, rellenos de felicidad.</p></div></div>
+        <div class="menu-grid single-grid" id="waffleGrid"></div>
+      </section>
+
+      <section id="bebidas" class="menu-section drink-section">
+        <div class="section-heading"><div><p class="eyebrow">El acompañamiento perfecto</p><h2>🥤 Bebidas</h2><p>Latas 350 ml bien heladas.</p></div></div>
+        <div class="menu-grid drink-grid" id="drinkGrid"></div>
+      </section>
+    </main>
+
+    <footer><strong>Salvatore</strong><span>Campillo 920, Mulchén · Pedidos por WhatsApp</span><a href="https://wa.me/56950602621" target="_blank" rel="noreferrer">+56 9 5060 2621</a><a class="staff-access" href="admin.html">Acceso equipo</a></footer>
+
+    <div id="productModal" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal product-modal"><button class="close" data-close="productModal" aria-label="Cerrar">×</button><div id="modalContent"></div></div>
+    </div>
+    <aside id="cartDrawer" class="cart-drawer" aria-label="Tu pedido" aria-hidden="true">
+      <div class="drawer-header"><div><p class="eyebrow">Casi listo</p><h2>Tu pedido</h2></div><button class="close" id="closeCart" aria-label="Cerrar carrito">×</button></div>
+      <div id="cartItems" class="cart-items"></div>
+      <div id="cartEmpty" class="cart-empty">Tu carrito está esperando algo rico. 🍕</div>
+      <div class="cart-footer"><div class="subtotal"><span>Subtotal</span><strong id="cartSubtotal">$0</strong></div><button id="checkoutButton" class="primary-button full">Continuar pedido <span>→</span></button></div>
+    </aside><div id="drawerShade" class="drawer-shade"></div>
+
+    <div id="checkoutModal" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="checkoutTitle">
+      <form class="modal checkout-modal" id="checkoutForm"><button type="button" class="close" data-close="checkoutModal" aria-label="Cerrar">×</button><p class="eyebrow">Último paso</p><h2 id="checkoutTitle">Completa tu pedido</h2>
+        <label>Tu nombre<input name="name" required placeholder="Ej. Camila Pérez" /></label><label>Teléfono<input name="phone" required inputmode="tel" placeholder="+56 9 ..." /></label>
+        <fieldset><legend>¿Cómo recibes tu pedido?</legend><label class="choice"><input type="radio" name="delivery" value="pickup" checked /><span><b>Retiro en local</b><small>Campillo 920, Mulchén</small></span><strong>Gratis</strong></label><label class="choice"><input type="radio" name="delivery" value="urban" /><span><b>Delivery urbano</b><small>Radio urbano Mulchén</small></span><strong>$500</strong></label><label class="choice"><input type="radio" name="delivery" value="lomas" /><span><b>Delivery Lomas Verdes</b><small>Y alrededores</small></span><strong>$1.000</strong></label></fieldset>
+        <label id="addressWrap" class="hidden">Dirección de entrega<input name="address" placeholder="Calle, número y referencias" /></label>
+        <fieldset><legend>Medio de pago</legend><label class="choice"><input type="radio" name="payment" value="cash" checked /><span><b>💵 Efectivo</b><small>Paga al recibir</small></span></label><label class="choice"><input type="radio" name="payment" value="transfer" /><span><b>🏦 Transferencia</b><small>Banco Estado · Cuenta RUT</small></span></label><div id="bankInfo" class="bank-info hidden"><p><b>Carlos Borquez Vidal</b><br />Banco Estado · Cuenta RUT<br />20.322.788 · RUT 20.322.788-4<br />carlosmbv2000@gmail.com</p><button type="button" id="copyBank" class="secondary-button">Copiar datos</button></div></fieldset>
+        <label>Notas para tu pedido <textarea name="notes" placeholder="Alergias, indicaciones o comentarios"></textarea></label><div class="checkout-total"><span>Total estimado</span><strong id="checkoutTotal">$0</strong></div><button class="primary-button full" type="submit">Pedir por WhatsApp <span>↗</span></button>
+      </form>
+    </div>
+    <div id="availabilityModal" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="availabilityModalTitle">
+      <form class="modal availability-modal" id="availabilityForm"><button type="button" class="close" data-close="availabilityModal" aria-label="Cerrar">×</button><p class="eyebrow">Gestión del local</p><h2 id="availabilityModalTitle">Disponibilidad de hoy</h2><p class="availability-intro">Actualiza este estado cuando haya alta demanda o se agoten los cupos.</p>
+        <fieldset><legend>Estado de pedidos</legend><label class="status-choice"><input type="radio" name="availability" value="available" checked /><span>●</span><b>Disponible</b><small>Recibimos pedidos normalmente</small></label><label class="status-choice"><input type="radio" name="availability" value="busy" /><span>●</span><b>Alta demanda</b><small>La cocina tiene pedidos pendientes</small></label><label class="status-choice"><input type="radio" name="availability" value="closed" /><span>●</span><b>Cupos agotados</b><small>No se reciben más pedidos por ahora</small></label></fieldset>
+        <label>Tiempo estimado de entrega<select name="wait"><option>25–35 min</option><option>35–45 min</option><option>45–60 min</option><option>60–75 min</option><option>A confirmar por WhatsApp</option></select></label><label>Mensaje adicional <input name="availabilityNote" placeholder="Ej. Volvemos a tomar pedidos a las 20:00" /></label><button class="primary-button full" type="submit">Guardar estado</button>
+      </form>
+    </div>
+    <div id="toast" class="toast" role="status"></div>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="supabase-client.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
