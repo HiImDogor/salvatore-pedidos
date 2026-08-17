@@ -6,7 +6,7 @@ const products = [
 ].map(([id,name,price,description,icon,type])=>({id,name,price,description,icon,type}));
 const pizzaExtras=['Extra Mozzarella','Extra Pepperoni','Champiñones','Tocino','Aceitunas Negras','Cebolla','Tomate fresco','Albahaca']; const waffleExtras=['Extra salsa de chocolate','Chispas de chocolate','Extra manjar'];
 let cart=JSON.parse(localStorage.getItem('salvatore-cart')||'[]'), selected=null, quantity=1;
-let availability=JSON.parse(localStorage.getItem('salvatore-availability')||'{"status":"available","wait":"25–35 min","note":""}');
+let availabilityByWorld=JSON.parse(localStorage.getItem('salvatore-availability-worlds')||'{"pizza":{"status":"available","wait":"25–35 min","note":""},"waffle":{"status":"available","wait":"25–35 min","note":""}}'),activeWorld='pizza',availability=availabilityByWorld.pizza;
 const $=s=>document.querySelector(s); const byId=id=>products.find(p=>p.id===id);
 function card(p){return `<article class="card ${p.type}-card"><div class="card-visual">${p.icon}</div><div class="card-body"><h3>${p.name}</h3><p>${p.description}</p><div class="card-footer"><span class="price">${money(p.price)}</span><button class="add-button" data-add="${p.id}">Agregar</button></div></div></article>`}
 $('#pizzaGrid').innerHTML=products.filter(p=>p.type==='pizza').map(card).join('');
@@ -32,4 +32,7 @@ function setWorld(world){const pizza=world==='pizza',all=world==='all';document.
 function start(section){const world=section==='waffles'?'waffle':section==='all'?'all':'pizza';setWorld(world);$('#welcome').classList.add('out');window.scrollTo({top:0,behavior:'smooth'})}
 $('#changeWorld').addEventListener('click',()=>{$('#welcome').classList.remove('out');window.scrollTo({top:0,behavior:'smooth'})});
 document.addEventListener('click',e=>{if(e.target.id==='skipWelcome'){e.stopImmediatePropagation();start('all')}},true);
+const setWorldBase=setWorld;
+setWorld=world=>{activeWorld=world==='waffle'?'waffle':'pizza';availability=availabilityByWorld[activeWorld]||availabilityByWorld.pizza;setWorldBase(world);renderAvailability()};
+loadRemoteAvailability=async()=>{if(!window.salvatoreSupabase)return;const {data,error}=await window.salvatoreSupabase.from('store_availability').select('pizza_status,pizza_wait,pizza_note,waffle_status,waffle_wait,waffle_note').eq('id',1).single();if(!error&&data){availabilityByWorld={pizza:{status:data.pizza_status||'available',wait:data.pizza_wait||'25–35 min',note:data.pizza_note||''},waffle:{status:data.waffle_status||'available',wait:data.waffle_wait||'25–35 min',note:data.waffle_note||''}};localStorage.setItem('salvatore-availability-worlds',JSON.stringify(availabilityByWorld));availability=availabilityByWorld[activeWorld]||availabilityByWorld.pizza;renderAvailability()}};
 renderCart();renderAvailability();loadRemoteAvailability();setInterval(loadRemoteAvailability,60000);
