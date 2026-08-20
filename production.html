@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#2B1D16" />
+    <meta name="robots" content="noindex, nofollow, noarchive" />
+    <title>Planificación de compras | Salvatore</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="admin.css" />
+    <link rel="stylesheet" href="production.css" />
+  </head>
+  <body>
+    <header class="admin-header"><a href="admin.html" class="admin-brand"><img src="assets/salvatore-pizza-logo.png" alt="Salvatore" /><span>Salvatore <i>Producción</i></span></a><a class="view-site" href="admin.html">← Administración</a></header>
+    <main>
+      <section id="loginView" class="login-view"><div class="login-card"><img src="assets/salvatore-pizza-logo.png" alt="Salvatore" /><p class="eyebrow">Acceso privado</p><h1>Planificación</h1><p>Ingresa con tu cuenta de administración.</p><form id="loginForm"><label>Correo electrónico<input name="email" type="email" required autocomplete="email" /></label><label>Contraseña<input name="password" type="password" required autocomplete="current-password" /></label><p id="loginError" class="login-error hidden"></p><button type="submit" class="save-button">Ingresar</button></form></div></section>
+      <section id="plannerView" class="hidden">
+        <section class="intro planner-intro"><p class="eyebrow">Mise en place</p><h1>Planifica tus compras</h1><p>Define la meta de producción y anota el stock actual. La lista calcula lo que falta comprar; no usa estimaciones de kilos que no hayas definido tú.</p></section>
+        <section class="planner-summary" aria-live="polite"><div><span>Productos por reponer</span><strong id="pendingCount">0</strong></div><div><span>Separado por</span><strong>Pizza / Waffle</strong></div><button id="saveInventory" class="save-button" type="button">Guardar planificación</button></section>
+        <section id="pizzaList" class="inventory-world pizza-list"><div class="world-heading"><p class="eyebrow">🍕 Mundo pizza</p><h2>Ingredientes para pizzas</h2></div></section>
+        <section id="waffleList" class="inventory-world waffle-list"><div class="world-heading"><p class="eyebrow">🧇 Mundo waffle</p><h2>Ingredientes para waffles</h2></div></section>
+        <section class="panel add-item"><h2>Agregar ingrediente</h2><form id="addItemForm"><label class="field">Mundo<select name="world"><option value="pizza">Pizzas</option><option value="waffle">Waffles</option></select></label><label class="field">Ingrediente<input name="name" maxlength="80" required placeholder="Ej. Caja de envases" /></label><label class="field">Unidad<select name="unit"><option>unidades</option><option>kg</option><option>g</option><option>litros</option><option>ml</option><option>paquetes</option></select></label><label class="field">Meta inicial<input name="target" type="number" min="0" step="0.01" value="0" /></label><label class="field">Stock inicial<input name="stock" type="number" min="0" step="0.01" value="0" /></label><button class="save-button" type="submit">Agregar a la lista</button></form></section>
+        <p class="local-note">Los datos de inventario se guardan en Supabase y solo los administradores pueden verlos o modificarlos.</p><button id="logoutButton" class="logout-button" type="button">Cerrar sesión</button><button id="saveInventoryBottom" class="save-floating" type="button">Guardar cambios</button>
+      </section>
+    </main>
+    <div id="toast" class="toast" role="status"></div>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script><script src="supabase-client.js"></script><script src="production.js"></script>
+  </body>
+</html>
