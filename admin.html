@@ -12,30 +12,249 @@
     <link rel="stylesheet" href="admin.css" />
   </head>
   <body>
-    <header class="admin-header"><a href="index.html" class="admin-brand"><img src="assets/salvatore-pizza-logo.png" alt="Salvatore" /><span>Salvatore <i>Administración</i></span></a><a class="view-site" href="index.html" target="_blank" rel="noreferrer">Ver web clientes ↗</a></header>
+    <header class="admin-header">
+      <a href="index.html" class="admin-brand">
+        <img src="assets/salvatore-pizza-logo.png" alt="Salvatore" />
+        <span>Salvatore <i>Administración</i></span>
+      </a>
+      <div class="admin-header-actions">
+        <a class="production-header-link" href="production.html">🧾 Compras</a>
+        <a class="view-site" href="index.html" target="_blank" rel="noreferrer">Ver web clientes ↗</a>
+      </div>
+    </header>
+
     <main>
-      <section id="loginView" class="login-view"><div class="login-card"><img src="assets/salvatore-pizza-logo.png" alt="Salvatore" /><p class="eyebrow">Acceso privado</p><h1>Equipo Salvatore</h1><p>Ingresa con el correo y contraseña del equipo administrador.</p><form id="loginForm"><label>Correo electrónico<input name="email" type="email" required autocomplete="email" placeholder="correo@ejemplo.cl" /></label><label>Contraseña<input name="password" type="password" required autocomplete="current-password" /></label><p id="loginError" class="login-error hidden"></p><button type="submit" class="save-button">Ingresar</button></form></div></section>
-      <section id="adminView" class="hidden">
-      <section class="intro"><p class="eyebrow">Panel de operación</p><h1>Disponibilidad de hoy</h1><p>Actualiza aquí la capacidad de la cocina. El aviso se mostrará a los clientes antes de hacer su pedido.</p><a class="production-link" href="production.html"><span class="production-icon">🧾</span><span class="production-copy"><b>Planificar compras</b><small>Stock y mise en place</small></span><span class="production-arrow">→</span></a></section>
-      <section class="dashboard-grid">
-        <form id="availabilityForm" class="panel settings-panel">
-          <h2>Estado de pedidos</h2>
-          <label class="field">Aplicar estado a<select name="world"><option value="pizza">🍕 Solo Pizzas</option><option value="waffle">🧇 Solo Waffles</option><option value="both">🍕🧇 Pizzas y Waffles</option></select></label>
-          <div class="status-options">
-            <label class="status-option available"><input type="radio" name="availability" value="available" checked /><span class="radio-dot"></span><span><b>Disponible</b><small>Recibimos pedidos normalmente.</small></span></label>
-            <label class="status-option busy"><input type="radio" name="availability" value="busy" /><span class="radio-dot"></span><span><b>Alta demanda</b><small>Hay pedidos pendientes en cocina.</small></span></label>
-            <label class="status-option closed"><input type="radio" name="availability" value="closed" /><span class="radio-dot"></span><span><b>Cupos agotados</b><small>No recibiremos más pedidos por ahora.</small></span></label>
-          </div>
-          <label class="field">Tiempo estimado<select name="wait"><option>25–35 min</option><option>35–45 min</option><option>45–60 min</option><option>60–75 min</option><option>A confirmar por WhatsApp</option></select></label>
-          <label class="field">Mensaje para clientes<input name="availabilityNote" placeholder="Ej. Volvemos a tomar pedidos a las 20:00" /></label>
-          <button class="save-button" type="submit">Guardar cambios</button>
-        </form>
-        <aside class="panel preview-panel"><p class="eyebrow">Vista previa cliente</p><h2>Así verán el estado</h2><div id="previewBanner" class="preview-banner available"><span id="previewIcon">●</span><p><b id="previewTitle">Pedidos disponibles</b><small id="previewDetail">Tiempo estimado: 25–35 min</small></p></div><div class="tip"><b>Consejo operativo</b><p>Usa rangos de tiempo. Actualízalos al iniciar una tanda nueva o cuando cambie la carga de pedidos.</p></div></aside>
+      <!-- Login Screen -->
+      <section id="loginView" class="login-view">
+        <div class="login-card">
+          <img src="assets/salvatore-pizza-logo.png" alt="Salvatore" />
+          <p class="eyebrow">Acceso privado</p>
+          <h1>Equipo Salvatore</h1>
+          <p>Ingresa con el correo y contraseña del equipo administrador.</p>
+          <form id="loginForm">
+            <label>Correo electrónico
+              <input name="email" type="email" required autocomplete="email" placeholder="correo@ejemplo.cl" />
+            </label>
+            <label>Contraseña
+              <input name="password" type="password" required autocomplete="current-password" />
+            </label>
+            <p id="loginError" class="login-error hidden"></p>
+            <button type="submit" class="save-button">Ingresar</button>
+          </form>
+        </div>
       </section>
-      <section class="panel guide"><h2>Guía rápida</h2><div><p><b>1. Disponible</b><span>Cuando la cocina puede recibir pedidos normalmente.</span></p><p><b>2. Alta demanda</b><span>Cuando debes aumentar el plazo por pedidos en cola.</span></p><p><b>3. Cupos agotados</b><span>Bloquea nuevos pedidos y evita expectativas equivocadas.</span></p></div></section>
-      <p class="local-note">Los cambios se guardan de forma segura y se comparten con la web de clientes.</p><button id="logoutButton" class="logout-button" type="button">Cerrar sesión</button>
+
+      <!-- Admin Dashboard Screen -->
+      <section id="adminView" class="hidden">
+        <!-- Navigation tabs -->
+        <nav class="admin-tabs" aria-label="Secciones de administración">
+          <button type="button" class="tab-button active" data-tab="orders">📥 Comandas en Vivo <span id="pendingOrdersBadge" class="badge-count">0</span></button>
+          <button type="button" class="tab-button" data-tab="history">📜 Historial de Pedidos</button>
+          <button type="button" class="tab-button" data-tab="availability">⚙️ Disponibilidad y Horarios</button>
+        </nav>
+
+        <!-- Tab 1: Live Orders (KDS / Cocina) -->
+        <section id="tabOrders" class="tab-content">
+          <div class="intro orders-intro">
+            <div>
+              <p class="eyebrow">Cocina y Despacho</p>
+              <h1>Comandas en Vivo</h1>
+              <p>Seguimiento de pedidos activos del día en tiempo real.</p>
+            </div>
+            <button id="refreshOrdersBtn" class="secondary-button refresh-btn" type="button">🔄 Actualizar</button>
+          </div>
+
+          <!-- Orders Stats Summary -->
+          <div class="orders-summary-bar">
+            <div class="summary-card">
+              <span>Pendientes</span>
+              <strong id="statPendingCount">0</strong>
+            </div>
+            <div class="summary-card">
+              <span>En cocina</span>
+              <strong id="statPreparingCount">0</strong>
+            </div>
+            <div class="summary-card">
+              <span>Listos / En camino</span>
+              <strong id="statReadyCount">0</strong>
+            </div>
+            <div class="summary-card total-card">
+              <span>Ventas estimadas hoy</span>
+              <strong id="statTotalSales">$0</strong>
+            </div>
+          </div>
+
+          <!-- Filter buttons -->
+          <div class="orders-filter-bar">
+            <button type="button" class="filter-chip active" data-order-filter="active">🔥 Comandas Activas (<span id="activeOrdersCount">0</span>)</button>
+            <button type="button" class="filter-chip" data-order-filter="pending">🟡 Pendientes</button>
+            <button type="button" class="filter-chip" data-order-filter="preparing">🟠 En preparación</button>
+            <button type="button" class="filter-chip" data-order-filter="ready">🟢 Listos</button>
+            <button type="button" class="filter-chip" data-order-filter="delivered">✔️ Entregados hoy</button>
+            <button type="button" class="filter-chip" data-order-filter="all_today">Ver todo hoy</button>
+          </div>
+
+          <!-- Orders List Container -->
+          <div id="ordersList" class="orders-list">
+            <p class="empty-state">Cargando comandas...</p>
+          </div>
+        </section>
+
+        <!-- Tab 2: Full Orders History & Analytics -->
+        <section id="tabHistory" class="tab-content hidden">
+          <div class="intro orders-intro">
+            <div>
+              <p class="eyebrow">Auditoría y Ventas</p>
+              <h1>Historial de Pedidos</h1>
+              <p>Busca, filtra y analiza todos los pedidos registrados en Salvatore.</p>
+            </div>
+            <button id="exportCsvBtn" class="secondary-button export-btn" type="button">📊 Exportar a Excel (CSV)</button>
+          </div>
+
+          <!-- History Summary Bar -->
+          <div class="orders-summary-bar history-summary-bar">
+            <div class="summary-card">
+              <span>Pedidos Filtrados</span>
+              <strong id="histTotalCount">0</strong>
+            </div>
+            <div class="summary-card">
+              <span>Total Facturado</span>
+              <strong id="histTotalAmount" style="color: var(--green);">$0</strong>
+            </div>
+            <div class="summary-card">
+              <span>Ticket Promedio</span>
+              <strong id="histAverageTicket">$0</strong>
+            </div>
+          </div>
+
+          <!-- Advanced Filter Controls -->
+          <div class="history-controls-card">
+            <div class="search-wrap">
+              <input id="histSearchInput" type="search" placeholder="🔍 Buscar por N° orden, nombre, teléfono o dirección..." />
+            </div>
+            <div class="filters-row">
+              <label>Ordenar por
+                <select id="histSortSelect">
+                  <option value="id_desc">Más recientes primero (N° Pedido ↓)</option>
+                  <option value="id_asc">Más antiguos primero (N° Pedido ↑)</option>
+                  <option value="total_desc">Mayor monto total ($ ↓)</option>
+                  <option value="total_asc">Menor monto total ($ ↑)</option>
+                </select>
+              </label>
+              <label>Período
+                <select id="histDateSelect">
+                  <option value="all">Todo el historial</option>
+                  <option value="today">Solo hoy</option>
+                  <option value="week">Últimos 7 días</option>
+                  <option value="month">Últimos 30 días</option>
+                </select>
+              </label>
+              <label>Estado
+                <select id="histStatusSelect">
+                  <option value="all">Todos los estados</option>
+                  <option value="delivered">✔️ Solo Entregados</option>
+                  <option value="active">⏳ Solo Activos (Pendiente/Cocina/Listo)</option>
+                  <option value="cancelled">❌ Solo Cancelados</option>
+                </select>
+              </label>
+              <label>Mundo
+                <select id="histWorldSelect">
+                  <option value="all">Pizzas y Waffles</option>
+                  <option value="pizza">🍕 Solo Pizzas</option>
+                  <option value="waffle">🧇 Solo Waffles</option>
+                </select>
+              </label>
+            </div>
+          </div>
+
+          <!-- History List Container -->
+          <div id="historyOrdersList" class="orders-list history-list">
+            <p class="empty-state">Cargando historial...</p>
+          </div>
+        </section>
+
+        <!-- Tab 3: Availability Settings -->
+        <section id="tabAvailability" class="tab-content hidden">
+          <section class="intro">
+            <p class="eyebrow">Panel de operación</p>
+            <h1>Disponibilidad de hoy</h1>
+            <p>Actualiza aquí la capacidad de la cocina. El aviso se mostrará a los clientes antes de hacer su pedido.</p>
+          </section>
+
+          <section class="dashboard-grid">
+            <form id="availabilityForm" class="panel settings-panel">
+              <h2>Estado de pedidos</h2>
+              <label class="field">Aplicar estado a
+                <select name="world">
+                  <option value="pizza">🍕 Solo Pizzas</option>
+                  <option value="waffle">🧇 Solo Waffles</option>
+                  <option value="both">🍕🧇 Pizzas y Waffles</option>
+                </select>
+              </label>
+              <div class="status-options">
+                <label class="status-option available">
+                  <input type="radio" name="availability" value="available" checked />
+                  <span class="radio-dot"></span>
+                  <span><b>Disponible</b><small>Recibimos pedidos normalmente.</small></span>
+                </label>
+                <label class="status-option busy">
+                  <input type="radio" name="availability" value="busy" />
+                  <span class="radio-dot"></span>
+                  <span><b>Alta demanda</b><small>Hay pedidos pendientes en cocina.</small></span>
+                </label>
+                <label class="status-option closed">
+                  <input type="radio" name="availability" value="closed" />
+                  <span class="radio-dot"></span>
+                  <span><b>Cupos agotados</b><small>No recibiremos más pedidos por ahora.</small></span>
+                </label>
+              </div>
+              <label class="field">Tiempo estimado
+                <select name="wait">
+                  <option>25–35 min</option>
+                  <option>35–45 min</option>
+                  <option>45–60 min</option>
+                  <option>60–75 min</option>
+                  <option>A confirmar por WhatsApp</option>
+                </select>
+              </label>
+              <label class="field">Mensaje para clientes
+                <input name="availabilityNote" placeholder="Ej. Volvemos a tomar pedidos a las 20:00" />
+              </label>
+              <button class="save-button" type="submit">Guardar cambios</button>
+            </form>
+
+            <aside class="panel preview-panel">
+              <p class="eyebrow">Vista previa cliente</p>
+              <h2>Así verán el estado</h2>
+              <div id="previewBanner" class="preview-banner available">
+                <span id="previewIcon">●</span>
+                <p>
+                  <b id="previewTitle">Pedidos disponibles</b>
+                  <small id="previewDetail">Tiempo estimado: 25–35 min</small>
+                </p>
+              </div>
+              <div class="tip">
+                <b>Consejo operativo</b>
+                <p>Usa rangos de tiempo. Actualízalos al iniciar una tanda nueva o cuando cambie la carga de pedidos.</p>
+              </div>
+            </aside>
+          </section>
+
+          <section class="panel guide">
+            <h2>Guía rápida</h2>
+            <div>
+              <p><b>1. Disponible</b><span>Cuando la cocina puede recibir pedidos normalmente.</span></p>
+              <p><b>2. Alta demanda</b><span>Cuando debes aumentar el plazo por pedidos en cola.</span></p>
+              <p><b>3. Cupos agotados</b><span>Bloquea nuevos pedidos y evita expectativas equivocadas.</span></p>
+            </div>
+          </section>
+        </section>
+
+        <p class="local-note">Los cambios se sincronizan en tiempo real con la web de clientes.</p>
+        <button id="logoutButton" class="logout-button" type="button">Cerrar sesión</button>
       </section>
     </main>
+
     <div id="toast" class="toast" role="status"></div>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-config.js"></script>
