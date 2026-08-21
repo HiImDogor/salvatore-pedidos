@@ -26,7 +26,7 @@
       <nav aria-label="Categorías">
         <a href="#pizzas" data-category="pizzas">🍕 Pizzas</a>
         <a href="#waffles" data-category="waffles">🧇 Waffles</a>
-        <a href="#bebidas" data-category="bebidas">🥤 Bebidas</a>
+        <a href="#bebidas" data-category="bebidas" hidden>🥤 Bebidas</a>
       </nav>
       <div class="header-actions"><button id="changeWorld" class="world-switch" type="button">Cambiar mundo</button><button id="cartButton" class="cart-button" aria-label="Abrir carrito">🛒 <b id="cartCount">0</b></button></div>
     </header>
@@ -48,7 +48,7 @@
         <div class="menu-grid" id="pizzaGrid"></div>
       </section>
 
-      <section id="combos" class="combo-section">
+      <section id="combos" class="combo-section" hidden>
         <div><p class="eyebrow">Para compartir</p><h2>🍕 + 🥤 Arma tu combinación</h2><p>Elige tu pizza favorita y acompáñala con las bebidas que más te gusten.</p></div>
         <a class="primary-button" href="#bebidas">Ver bebidas <span>→</span></a>
       </section>
@@ -58,7 +58,7 @@
         <div class="menu-grid single-grid" id="waffleGrid"></div>
       </section>
 
-      <section id="bebidas" class="menu-section drink-section">
+      <section id="bebidas" class="menu-section drink-section" hidden>
         <div class="section-heading"><div><p class="eyebrow">El acompañamiento perfecto</p><h2>🥤 Bebidas</h2><p>Latas 350 ml bien heladas.</p></div></div>
         <div class="menu-grid drink-grid" id="drinkGrid"></div>
       </section>
