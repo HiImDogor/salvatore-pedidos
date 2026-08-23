@@ -470,6 +470,7 @@ img {
   display: flex;
   flex-direction: column;
   transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
 }
 
 .card:hover {
@@ -529,7 +530,7 @@ img {
 .card-visual.with-photo {
   background: #2b1d16;
   height: auto;
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 1 / 1;
 }
 
 .card-visual.with-photo img {
@@ -657,18 +658,34 @@ img {
 }
 
 /* --------------------------------------------------------------------------
-   9. MODALS & OVERLAYS (CLEAN SPECIFICITY)
+   9. MODALS & OVERLAYS (CLEAN SPECIFICITY & FLUID ANIMATION)
    -------------------------------------------------------------------------- */
 .overlay {
   position: fixed;
   z-index: 50;
   inset: 0;
   background: rgba(43, 29, 22, 0.68);
-  backdrop-filter: blur(3px);
+  backdrop-filter: blur(4px);
   display: grid;
   place-items: center;
   padding: 20px;
   overflow-y: auto;
+  transition: opacity 0.2s ease;
+}
+
+.overlay:not(.hidden) .modal {
+  animation: modalEnter 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes modalEnter {
+  0% {
+    opacity: 0;
+    transform: scale(0.94) translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 .modal {
@@ -731,6 +748,7 @@ img {
 
 .modal-product-header.with-photo {
   background: #2b1d16;
+  height: 240px;
 }
 
 .modal-product-header.with-photo img {
@@ -739,6 +757,16 @@ img {
   object-fit: cover;
   object-position: center;
   display: block;
+  animation: imagePopReveal 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes imagePopReveal {
+  0% {
+    transform: scale(1.08);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 .modal-product-header::after {
@@ -1444,19 +1472,55 @@ footer .staff-access {
   left: 50%;
   transform: translate(-50%, 140px);
   z-index: 110;
-  background: var(--green);
+  background: var(--espresso);
   color: var(--white);
-  padding: 12px 20px;
-  border-radius: var(--radius-sm);
-  font-size: 13px;
+  padding: 10px 16px 10px 20px;
+  border-radius: var(--radius-pill);
+  font-size: 14px;
   font-weight: 600;
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: var(--shadow-retro);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s;
+  box-shadow: 0 8px 24px rgba(43, 29, 22, 0.35);
   pointer-events: none;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: calc(100vw - 32px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .toast.show {
   transform: translate(-50%, 0);
+  pointer-events: auto;
+}
+
+.toast-action {
+  background: var(--red);
+  color: var(--white);
+  border: 0;
+  border-radius: var(--radius-pill);
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: var(--transition);
+}
+
+.toast-action:hover {
+  background: #b52718;
+}
+
+/* Cart Bump Animation on header */
+@keyframes cartBump {
+  0% { transform: scale(1); }
+  25% { transform: scale(1.22); }
+  50% { transform: scale(0.95); }
+  75% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+.cart-bump {
+  animation: cartBump 0.45s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* --------------------------------------------------------------------------
@@ -1509,7 +1573,7 @@ footer .staff-access {
 
   .card-visual.with-photo {
     height: auto;
-    aspect-ratio: 16 / 10;
+    aspect-ratio: 1 / 1;
   }
 
   .waffle-card .card-visual {
@@ -1567,7 +1631,7 @@ footer .staff-access {
   }
 
   .modal-product-header.with-photo {
-    height: 220px;
+    height: 240px;
   }
 
   footer {
@@ -1593,5 +1657,41 @@ footer .staff-access {
 
   .cart-drawer {
     width: 100%;
+  }
+
+  .overlay {
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  .modal {
+    width: 100%;
+    max-height: 90vh;
+    border-radius: 24px 24px 0 0;
+    border-bottom: none;
+  }
+
+  .overlay:not(.hidden) .modal {
+    animation: modalSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  @keyframes modalSlideUp {
+    0% {
+      opacity: 0;
+      transform: translateY(100%);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .modal-product-header.with-photo {
+    height: 230px;
+  }
+
+  .product-modal-content {
+    padding: 20px 18px 24px;
+    max-height: calc(90vh - 230px);
   }
 }

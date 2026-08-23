@@ -386,10 +386,21 @@ function addProductToCart() {
     });
   }
 
+  const addedName = state.selectedProduct.name;
+  const addedQty = state.quantity;
+
   persistCart();
   closeModal('productModal');
-  openCart();
-  showToast('¡Agregado a tu pedido! 🍕');
+
+  // Animación interactiva en el botón de carrito de la cabecera
+  const cartBtn = $('#cartButton');
+  if (cartBtn) {
+    cartBtn.classList.remove('cart-bump');
+    void cartBtn.offsetWidth;
+    cartBtn.classList.add('cart-bump');
+  }
+
+  showToast(`¡${addedQty}x ${addedName} al pedido! 🍕`, 'Ver pedido 🛒', openCart);
 }
 
 // ==========================================================================
@@ -644,13 +655,27 @@ function startPortal(section) {
 // 9. TOAST & NOTIFICATIONS
 // ==========================================================================
 
-function showToast(message) {
+function showToast(message, actionText = null, onAction = null) {
   const toastEl = $('#toast');
   if (!toastEl) return;
-  toastEl.textContent = message;
+
+  if (actionText && typeof onAction === 'function') {
+    toastEl.innerHTML = `<span>${message}</span><button type="button" class="toast-action">${actionText}</button>`;
+    const btn = toastEl.querySelector('.toast-action');
+    if (btn) {
+      btn.onclick = e => {
+        e.stopPropagation();
+        toastEl.classList.remove('show');
+        onAction();
+      };
+    }
+  } else {
+    toastEl.textContent = message;
+  }
+
   toastEl.classList.add('show');
   clearTimeout(toastEl._timer);
-  toastEl._timer = setTimeout(() => toastEl.classList.remove('show'), 2600);
+  toastEl._timer = setTimeout(() => toastEl.classList.remove('show'), actionText ? 4200 : 2800);
 }
 
 // ==========================================================================
@@ -660,10 +685,16 @@ function showToast(message) {
 document.addEventListener('click', event => {
   const target = event.target;
 
-  // Add product button
+  // Add product button or tap anywhere on product card
   const addBtn = target.closest('[data-add]');
   if (addBtn) {
     openProductModal(addBtn.dataset.add);
+    return;
+  }
+
+  const card = target.closest('.card[data-product-id]');
+  if (card && !target.closest('button, a, input, textarea, label')) {
+    openProductModal(card.dataset.productId);
     return;
   }
 
