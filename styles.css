@@ -528,6 +528,8 @@ img {
 /* Card with real photo */
 .card-visual.with-photo {
   background: #2b1d16;
+  height: auto;
+  aspect-ratio: 16 / 10;
 }
 
 .card-visual.with-photo img {
@@ -1505,6 +1507,11 @@ footer .staff-access {
     font-size: 56px;
   }
 
+  .card-visual.with-photo {
+    height: auto;
+    aspect-ratio: 16 / 10;
+  }
+
   .waffle-card .card-visual {
     height: 150px;
   }
@@ -1557,6 +1564,10 @@ footer .staff-access {
 
   .modal-product-header {
     height: 160px;
+  }
+
+  .modal-product-header.with-photo {
+    height: 220px;
   }
 
   footer {
