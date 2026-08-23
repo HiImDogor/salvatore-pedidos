@@ -307,7 +307,7 @@ function openProductModal(productId) {
 
   $('#modalContent').innerHTML = `
     ${modalHeader}
-    <div class="product-modal-content">
+    <div class="product-modal-scroll">
       <h2 id="modalTitle">${product.name}</h2>
       <p class="price">${money(product.price)}</p>
       <p class="description">${product.description}</p>
@@ -327,17 +327,15 @@ function openProductModal(productId) {
       ` : ''}
 
       ${noteField}
+    </div>
 
-      <div class="quantity-row">
-        <b>Cantidad</b>
-        <div class="quantity">
-          <button id="decrease" type="button" aria-label="Disminuir">−</button>
-          <output id="quantity">1</output>
-          <button id="increase" type="button" aria-label="Aumentar">+</button>
-        </div>
+    <div class="product-modal-footer">
+      <div class="quantity">
+        <button id="decrease" type="button" aria-label="Disminuir">−</button>
+        <output id="quantity">1</output>
+        <button id="increase" type="button" aria-label="Aumentar">+</button>
       </div>
-
-      <button id="confirmAdd" class="primary-button full" type="button">
+      <button id="confirmAdd" class="primary-button modal-add-btn" type="button">
         Agregar · <span id="modalTotal">${money(product.price)}</span>
       </button>
     </div>
