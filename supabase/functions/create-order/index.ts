@@ -206,7 +206,11 @@ Deno.serve(async request => {
     return response({ orderId, subtotal, deliveryCost, total }, 201, corsHeaders);
   } catch (error) {
     console.error('create-order failed', error);
-    const message = error instanceof Error ? error.message : 'No fue posible registrar el pedido.';
+    const message = error instanceof Error
+      ? error.message
+      : typeof error === 'object' && error !== null && 'message' in error && typeof error.message === 'string'
+        ? error.message
+        : 'No fue posible registrar el pedido.';
     return response({ error: message }, 400, corsHeaders);
   }
 });

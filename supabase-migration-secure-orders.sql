@@ -17,6 +17,9 @@ revoke select, insert on public.order_items from anon, authenticated;
 revoke usage, select on sequence public.orders_id_seq from anon, authenticated;
 revoke usage, select on sequence public.order_items_id_seq from anon, authenticated;
 
+-- La Edge Function consulta la disponibilidad usando service_role.
+grant select on public.store_availability to service_role;
+
 -- El panel ya valida admin_users; RLS aplica la misma regla en la base de datos.
 grant select on public.orders to authenticated;
 grant select on public.order_items to authenticated;
