@@ -844,27 +844,18 @@ document.addEventListener('keydown', event => {
  * resuelven en el servidor, sin exponer secretos ni permisos de escritura.
  */
 async function createSecureOrder(order) {
-  if (!window.salvatoreSupabase) {
-    throw new Error('No fue posible conectar con el sistema de pedidos.');
-  }
-
-  const { data, error } = await window.salvatoreSupabase.functions.invoke('create-order', {
-    body: order
+  // fetch nativo evita que la confirmación dependa de la carga del SDK externo.
+  // La URL es pública; los secretos siguen exclusivamente en la Edge Function.
+  const supabaseUrl = window.SALVATORE_SUPABASE_CONFIG?.url || 'https://dwohhuplwizywaucftcp.supabase.co';
+  const response = await fetch(`${supabaseUrl}/functions/v1/create-order`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(order)
   });
+  const data = await response.json().catch(() => ({}));
 
-  if (error) {
-    let message = 'No fue posible registrar el pedido. Puedes enviarlo igualmente por WhatsApp.';
-    try {
-      const details = await error.context?.json();
-      message = details?.error || message;
-    } catch (_) {
-      // La respuesta de red puede no contener JSON; se conserva el mensaje útil.
-    }
-    throw new Error(message);
-  }
-
-  if (!data?.orderId) {
-    throw new Error('No recibimos la confirmación del pedido.');
+  if (!response.ok || !data?.orderId) {
+    throw new Error(data?.error || 'No recibimos la confirmación del pedido.');
   }
 
   return data;
@@ -904,6 +895,11 @@ $('#checkoutForm')?.addEventListener('submit', async event => {
   let orderId = null;
   let orderSaved = false;
 
+  if (!clientName || !/^\+?[\d\s()-]{8,30}$/.test(clientPhone)) {
+    showToast('Ingresa un nombre y teléfono válido para continuar.');
+    return;
+  }
+
   // 1. La Edge Function valida catálogo, precios y disponibilidad antes de guardar.
   try {
     const result = await createSecureOrder({
@@ -928,7 +924,7 @@ $('#checkoutForm')?.addEventListener('submit', async event => {
     orderSaved = true;
   } catch (error) {
     console.error('No fue posible registrar el pedido seguro:', error);
-    showToast(error.message || 'No fue posible registrar el pedido. Puedes enviarlo por WhatsApp.');
+    showToast(`${error.message || 'No fue posible registrar el pedido.'} Se abrirá WhatsApp como respaldo; la comanda no quedó registrada.`);
   }
 
   // 2. Construir mensaje de WhatsApp
