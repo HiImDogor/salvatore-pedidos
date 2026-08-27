@@ -8,9 +8,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css?v=20260827-4" />
+    <link rel="stylesheet" href="styles.css?v=20260827-5" />
   </head>
   <body>
+    <a class="skip-link" href="#inicio">Saltar al contenido</a>
     <div id="welcome" class="welcome" aria-modal="true" role="dialog">
       <p class="eyebrow">Hecho con cariño en Mulchén</p>
       <h1>¿Qué se te antoja<br />hoy?</h1>
@@ -97,11 +98,11 @@
 
     <div id="checkoutModal" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="checkoutTitle">
       <form class="modal checkout-modal" id="checkoutForm"><button type="button" class="close" data-close="checkoutModal" aria-label="Cerrar">×</button><p class="eyebrow">Último paso</p><h2 id="checkoutTitle">Completa tu pedido</h2>
-        <label>Tu nombre<input name="name" required placeholder="Ej. Camila Pérez" /></label><label>Teléfono<input name="phone" required inputmode="tel" placeholder="+56 9 ..." /></label>
+        <label>Tu nombre<input name="name" required autocomplete="name" autocapitalize="words" placeholder="Ej. Camila Pérez…" /></label><label>Teléfono<input name="phone" type="tel" required autocomplete="tel" inputmode="tel" placeholder="+56 9 1234 5678…" /></label>
         <fieldset><legend>¿Cómo recibes tu pedido?</legend><label class="choice"><input type="radio" name="delivery" value="pickup" checked /><span><b>Retiro en local</b><small>Campillo 920, Mulchén</small></span><strong>Gratis</strong></label><label class="choice"><input type="radio" name="delivery" value="delivery" /><span><b>Delivery a domicilio</b><small>Radio urbano Mulchén, Lomas Verdes y alrededores</small></span><strong>$1.000</strong></label></fieldset>
-        <label id="addressWrap" class="hidden">Dirección de entrega<input name="address" placeholder="Calle, número y referencias" /></label>
+        <label id="addressWrap" class="hidden">Dirección de entrega<input name="address" autocomplete="street-address" placeholder="Calle, número y referencias…" /></label>
         <fieldset><legend>Medio de pago</legend><label class="choice"><input type="radio" name="payment" value="cash" checked /><span><b>💵 Efectivo</b><small>Paga al recibir</small></span></label><label class="choice"><input type="radio" name="payment" value="transfer" /><span><b>🏦 Transferencia</b><small>Banco Estado · Cuenta RUT</small></span></label><div id="bankInfo" class="bank-info hidden"><p><b>Carlos Borquez Vidal</b><br />Banco Estado · Cuenta RUT<br />20.322.788 · RUT 20.322.788-4<br />carlosmbv2000@gmail.com</p><button type="button" id="copyBank" class="secondary-button">Copiar datos</button></div></fieldset>
-        <label>Notas para tu pedido <textarea name="notes" placeholder="Alergias, indicaciones o comentarios"></textarea></label><div class="checkout-total"><span>Total estimado</span><strong id="checkoutTotal">$0</strong></div><button class="primary-button full" type="submit">Pedir por WhatsApp <span>↗</span></button>
+        <label>Notas para tu pedido <textarea name="notes" autocomplete="off" placeholder="Alergias, indicaciones o comentarios…"></textarea></label><div class="checkout-total"><span>Total estimado</span><strong id="checkoutTotal">$0</strong></div><button class="primary-button full" type="submit">Pedir por WhatsApp <span>↗</span></button>
       </form>
     </div>
     <div id="availabilityModal" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="availabilityModalTitle">
@@ -114,6 +115,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-config.js"></script>
     <script src="supabase-client.js"></script>
-    <script src="app.js?v=20260827-4"></script>
+    <script src="app.js?v=20260827-6"></script>
   </body>
 </html>

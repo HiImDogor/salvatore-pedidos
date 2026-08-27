@@ -20,6 +20,13 @@ const MONEY = new Intl.NumberFormat('es-CL', {
 });
 
 const formatMoney = val => MONEY.format(val);
+const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, char => ({
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;',
+  "'": '&#039;'
+}[char]));
 
 let worlds = {
   pizza: { ...DEFAULT_AVAILABILITY },
@@ -297,15 +304,19 @@ function renderOrderCardHtml(order) {
 
   const items = order.order_items || [];
   const phoneClean = (order.client_phone || '').replace(/\D/g, '');
+  const clientName = escapeHtml(order.client_name);
+  const clientPhone = escapeHtml(order.client_phone);
+  const deliveryAddress = escapeHtml(order.delivery_address);
+  const orderNotes = escapeHtml(order.notes);
 
   return `
     <article class="order-card status-${order.status}" data-order-id="${order.id}">
       <header class="order-header">
         <div class="order-meta">
-          <h3>Pedido #${order.id} · ${order.client_name}</h3>
+          <h3>Pedido #${order.id} · ${clientName}</h3>
           <p>
             ${formatDate(order.created_at)} · 
-            <a href="tel:${order.client_phone}">📞 ${order.client_phone}</a> · 
+            <a href="tel:${phoneClean}">📞 ${clientPhone}</a> ·
             <a href="https://wa.me/${phoneClean}" target="_blank" rel="noreferrer">💬 WhatsApp</a>
           </p>
         </div>
@@ -315,7 +326,7 @@ function renderOrderCardHtml(order) {
       <div class="order-details-grid">
         <div>
           <b>Tipo de Entrega</b>
-          <span>${deliveryLabels[order.delivery_type] || order.delivery_type}${order.delivery_address ? ` (${order.delivery_address})` : ''}</span>
+          <span>${deliveryLabels[order.delivery_type] || escapeHtml(order.delivery_type)}${deliveryAddress ? ` (${deliveryAddress})` : ''}</span>
         </div>
         <div>
           <b>Medio de Pago</b>
@@ -324,7 +335,7 @@ function renderOrderCardHtml(order) {
         ${order.notes ? `
           <div style="grid-column: 1 / -1;">
             <b>Notas del cliente</b>
-            <span>${order.notes}</span>
+            <span>${orderNotes}</span>
           </div>
         ` : ''}
       </div>
@@ -334,9 +345,9 @@ function renderOrderCardHtml(order) {
         ${items.map(item => `
           <div class="order-item-row">
             <div>
-              <strong>${item.quantity}x ${item.product_name}</strong>
-              ${item.extras?.length ? `<small>+ ${item.extras.join(', ')}</small>` : ''}
-              ${item.notes ? `<small>Nota: ${item.notes}</small>` : ''}
+              <strong>${item.quantity}x ${escapeHtml(item.product_name)}</strong>
+              ${item.extras?.length ? `<small>+ ${escapeHtml(item.extras.join(', '))}</small>` : ''}
+              ${item.notes ? `<small>Nota: ${escapeHtml(item.notes)}</small>` : ''}
             </div>
             <span>${formatMoney(item.total_price || item.unit_price * item.quantity)}</span>
           </div>
@@ -355,7 +366,7 @@ function renderOrderCardHtml(order) {
             <option value="delivered" ${order.status === 'delivered' ? 'selected' : ''}>✔️ Entregado</option>
             <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>❌ Cancelado</option>
           </select>
-          <button class="delete-order-btn" data-delete-order="${order.id}" type="button" title="Eliminar pedido permanentemente">🗑️</button>
+          <button class="delete-order-btn" data-cancel-order="${order.id}" type="button" title="Cancelar pedido">Cancelar</button>
         </div>
       </footer>
     </article>
@@ -646,11 +657,14 @@ document.addEventListener('change', event => {
   }
 });
 
-// Delete order click
+// Cancel order click (the history is retained for auditing and support)
 document.addEventListener('click', event => {
-  const deleteBtn = event.target.closest('[data-delete-order]');
-  if (deleteBtn) {
-    deleteOrder(deleteBtn.dataset.deleteOrder);
+  const cancelBtn = event.target.closest('[data-cancel-order]');
+  if (cancelBtn) {
+    const orderId = cancelBtn.dataset.cancelOrder;
+    if (confirm(`¿Cancelar el Pedido #${orderId}? Se conservará en el historial.`)) {
+      updateOrderStatus(orderId, 'cancelled');
+    }
   }
 });
 

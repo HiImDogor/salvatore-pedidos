@@ -342,6 +342,7 @@ function openProductModal(productId) {
   `;
 
   $('#productModal').classList.remove('hidden');
+  requestAnimationFrame(() => $('#productModal [data-close]')?.focus());
 }
 
 function updateModalTotal() {
@@ -375,6 +376,7 @@ function addProductToCart() {
     existingItem.qty += state.quantity;
   } else {
     state.cart.push({
+      productId: state.selectedProduct.id,
       name: state.selectedProduct.name,
       icon: state.selectedProduct.icon,
       unit: unitPrice,
@@ -776,6 +778,7 @@ document.addEventListener('click', event => {
     }
     closeCart();
     $('#checkoutModal')?.classList.remove('hidden');
+    requestAnimationFrame(() => $('#checkoutForm input[name=name]')?.focus());
     updateCheckoutTotal();
     return;
   }
@@ -836,7 +839,38 @@ document.addEventListener('keydown', event => {
   }
 });
 
-// Checkout Form Submission (Supabase Order Save + WhatsApp generation)
+/**
+ * Registra la orden mediante la Edge Function. Los precios y Telegram se
+ * resuelven en el servidor, sin exponer secretos ni permisos de escritura.
+ */
+async function createSecureOrder(order) {
+  if (!window.salvatoreSupabase) {
+    throw new Error('No fue posible conectar con el sistema de pedidos.');
+  }
+
+  const { data, error } = await window.salvatoreSupabase.functions.invoke('create-order', {
+    body: order
+  });
+
+  if (error) {
+    let message = 'No fue posible registrar el pedido. Puedes enviarlo igualmente por WhatsApp.';
+    try {
+      const details = await error.context?.json();
+      message = details?.error || message;
+    } catch (_) {
+      // La respuesta de red puede no contener JSON; se conserva el mensaje útil.
+    }
+    throw new Error(message);
+  }
+
+  if (!data?.orderId) {
+    throw new Error('No recibimos la confirmación del pedido.');
+  }
+
+  return data;
+}
+
+// Checkout Form Submission (secure Supabase order + WhatsApp generation)
 $('#checkoutForm')?.addEventListener('submit', async event => {
   event.preventDefault();
   const form = event.target;
@@ -862,62 +896,43 @@ $('#checkoutForm')?.addEventListener('submit', async event => {
   const clientPhone = (data.get('phone') || '').trim();
   const deliveryAddress = (data.get('address') || '').trim();
   const orderNotes = (data.get('notes') || '').trim();
-  const subtotal = getCartTotal();
-  const deliveryCost = getDeliveryCost();
-  const grandTotal = subtotal + deliveryCost;
+  let subtotal = getCartTotal();
+  let deliveryCost = getDeliveryCost();
+  let grandTotal = subtotal + deliveryCost;
+  const cartSnapshot = state.cart.map(item => ({ ...item, extras: [...(item.extras || [])] }));
 
   let orderId = null;
+  let orderSaved = false;
 
-  // 1. Intentar registrar el pedido en Supabase
-  if (window.salvatoreSupabase) {
-    try {
-      const orderPayload = {
-        client_name: clientName,
-        client_phone: clientPhone,
-        delivery_type: deliveryType,
-        delivery_address: deliveryAddress,
-        payment_method: data.get('payment') || 'cash',
-        notes: orderNotes,
-        subtotal: subtotal,
-        delivery_cost: deliveryCost,
-        total: grandTotal,
-        world: state.activeWorld || 'pizza',
-        status: 'pending'
-      };
+  // 1. La Edge Function valida catálogo, precios y disponibilidad antes de guardar.
+  try {
+    const result = await createSecureOrder({
+      clientName,
+      clientPhone,
+      deliveryType,
+      deliveryAddress,
+      paymentMethod: data.get('payment') || 'cash',
+      notes: orderNotes,
+      items: cartSnapshot.map(item => ({
+        productId: item.productId || PRODUCTS.find(product => product.name === item.name)?.id,
+        quantity: item.qty,
+        extras: item.extras || [],
+        notes: item.note || ''
+      }))
+    });
 
-      const { data: createdOrder, error: orderError } = await window.salvatoreSupabase
-        .from('orders')
-        .insert(orderPayload)
-        .select('id')
-        .single();
-
-      if (orderError) {
-        console.error('Error al registrar pedido en Supabase:', orderError);
-      } else if (createdOrder?.id) {
-        orderId = createdOrder.id;
-
-        const itemsPayload = state.cart.map(item => ({
-          order_id: orderId,
-          product_name: item.name,
-          quantity: item.qty,
-          unit_price: item.unit,
-          total_price: item.unit * item.qty,
-          extras: item.extras || [],
-          notes: item.note || ''
-        }));
-
-        const { error: itemsError } = await window.salvatoreSupabase.from('order_items').insert(itemsPayload);
-        if (itemsError) {
-          console.error('Error al registrar ítems del pedido en Supabase:', itemsError);
-        }
-      }
-    } catch (err) {
-      console.error('Excepción al registrar pedido en Supabase:', err);
-    }
+    orderId = result.orderId;
+    subtotal = Number(result.subtotal);
+    deliveryCost = Number(result.deliveryCost);
+    grandTotal = Number(result.total);
+    orderSaved = true;
+  } catch (error) {
+    console.error('No fue posible registrar el pedido seguro:', error);
+    showToast(error.message || 'No fue posible registrar el pedido. Puedes enviarlo por WhatsApp.');
   }
 
   // 2. Construir mensaje de WhatsApp
-  const orderLines = state.cart.map(item => 
+  const orderLines = cartSnapshot.map(item =>
     `• ${item.qty}x ${item.name}${item.extras.length ? ` (+ ${item.extras.join(', ')})` : ''}${item.note ? ` [Nota: ${item.note}]` : ''} — ${money(item.unit * item.qty)}`
   ).join('\n');
 
@@ -939,7 +954,6 @@ $('#checkoutForm')?.addEventListener('submit', async event => {
   state.cart = [];
   persistCart();
   closeModal('checkoutModal');
-  showToast('¡Pedido registrado! Abriendo WhatsApp... 🍕');
 
   if (submitBtn) {
     submitBtn.disabled = false;
@@ -947,7 +961,16 @@ $('#checkoutForm')?.addEventListener('submit', async event => {
   }
 
   const whatsappUrl = `https://wa.me/56950602621?text=${encodeURIComponent(fullMessage)}`;
-  window.open(whatsappUrl, '_blank');
+  const whatsappWindow = window.open(whatsappUrl, '_blank');
+  if (whatsappWindow) {
+    showToast(orderSaved ? '¡Pedido registrado! Abriendo WhatsApp... 🍕' : 'Abriendo WhatsApp para enviar tu pedido...');
+  } else {
+    showToast(
+      orderSaved ? 'Pedido registrado. Abre WhatsApp para enviarlo.' : 'Tu pedido está listo. Abre WhatsApp para enviarlo.',
+      'Abrir WhatsApp',
+      () => window.open(whatsappUrl, '_blank')
+    );
+  }
 });
 
 // In-client quick availability form (if opened by staff)
