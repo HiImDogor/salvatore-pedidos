@@ -35,6 +35,7 @@ let worlds = {
 
 let orders = [];
 let currentLiveFilter = 'active';
+let kitchenSoundEnabled = localStorage.getItem('salvatoreKitchenSound') !== 'off';
 
 // ==========================================================================
 // 1. HELPERS & UI TOAST
@@ -62,6 +63,37 @@ function showLoginError(message) {
   if (!el) return;
   el.textContent = message;
   el.classList.remove('hidden');
+}
+
+function updateSoundButton() {
+  const button = $('#toggleSoundBtn');
+  if (!button) return;
+  button.setAttribute('aria-pressed', String(kitchenSoundEnabled));
+  button.textContent = kitchenSoundEnabled ? '🔔 Sonido activo' : '🔕 Sonido silenciado';
+}
+
+function playKitchenChime() {
+  if (!kitchenSoundEnabled) return;
+  try {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextClass) return;
+    const audioContext = new AudioContextClass();
+    const now = audioContext.currentTime;
+    [880, 1175].forEach((frequency, index) => {
+      const oscillator = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+      oscillator.frequency.value = frequency;
+      gain.gain.setValueAtTime(0.0001, now + index * 0.16);
+      gain.gain.exponentialRampToValueAtTime(0.16, now + index * 0.16 + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + index * 0.16 + 0.22);
+      oscillator.connect(gain).connect(audioContext.destination);
+      oscillator.start(now + index * 0.16);
+      oscillator.stop(now + index * 0.16 + 0.24);
+    });
+    setTimeout(() => audioContext.close(), 700);
+  } catch (error) {
+    console.warn('No fue posible reproducir el timbre de cocina:', error);
+  }
 }
 
 function formatDate(isoString) {
@@ -123,7 +155,11 @@ function initOrdersRealtime() {
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'orders' },
-        () => {
+        payload => {
+          if (payload.eventType === 'INSERT') {
+            playKitchenChime();
+            showToast(`🔔 Nueva comanda #${payload.new?.id || ''}`.trim());
+          }
           loadOrders();
         }
       )
@@ -647,6 +683,15 @@ $('#refreshOrdersBtn')?.addEventListener('click', () => {
   loadOrders();
   showToast('Comandas actualizadas.');
 });
+
+$('#toggleSoundBtn')?.addEventListener('click', () => {
+  kitchenSoundEnabled = !kitchenSoundEnabled;
+  localStorage.setItem('salvatoreKitchenSound', kitchenSoundEnabled ? 'on' : 'off');
+  updateSoundButton();
+  showToast(kitchenSoundEnabled ? 'Timbre de cocina activado.' : 'Timbre de cocina silenciado.');
+});
+
+updateSoundButton();
 
 // Status dropdown change in orders
 document.addEventListener('change', event => {

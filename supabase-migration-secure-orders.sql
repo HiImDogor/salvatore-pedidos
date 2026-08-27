@@ -20,6 +20,18 @@ revoke usage, select on sequence public.order_items_id_seq from anon, authentica
 -- La Edge Function consulta la disponibilidad usando service_role.
 grant select on public.store_availability to service_role;
 
+-- Las inserciones de pedidos se transmiten al panel de cocina conectado.
+do $$
+begin
+  if not exists (
+    select 1 from pg_publication_tables
+    where pubname = 'supabase_realtime' and schemaname = 'public' and tablename = 'orders'
+  ) then
+    alter publication supabase_realtime add table public.orders;
+  end if;
+end;
+$$;
+
 -- El panel ya valida admin_users; RLS aplica la misma regla en la base de datos.
 grant select on public.orders to authenticated;
 grant select on public.order_items to authenticated;

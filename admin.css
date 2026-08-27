@@ -162,6 +162,12 @@ main {
   max-width: 100%;
 }
 
+.admin-toolbar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .refresh-btn,
 .export-btn {
   font-size: 12px;
