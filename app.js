@@ -35,7 +35,7 @@ const PRODUCTS = [
     description: 'Pomodoro, mozzarella, jamón pierna y champiñones laminados.',
     icon: '🍕',
     type: 'pizza',
-    image: '',
+    image: 'assets/pizza_jamon_champinon.jpg',
     badge: 'Clásica'
   },
   {
@@ -45,7 +45,7 @@ const PRODUCTS = [
     description: 'Pomodoro, mozzarella, jamón, tomate fresco, aceitunas negras y orégano.',
     icon: '🍕',
     type: 'pizza',
-    image: '',
+    image: 'assets/pizza_napolitana.jpg',
     badge: 'Tradicional'
   },
   {
@@ -55,7 +55,7 @@ const PRODUCTS = [
     description: 'Pomodoro, mozzarella y pepperoni americano crujiente.',
     icon: '🍕',
     type: 'pizza',
-    image: '',
+    image: 'assets/pizza_pepperoni.jpg',
     badge: 'Muy pedida'
   },
   {
@@ -65,7 +65,7 @@ const PRODUCTS = [
     description: 'Pomodoro, mozzarella, jamón pierna, champiñón, aceitunas y alcachofa.',
     icon: '🍕',
     type: 'pizza',
-    image: '',
+    image: 'assets/pizza_capricciosa.jpg',
     badge: 'Especial'
   },
   {
@@ -75,7 +75,7 @@ const PRODUCTS = [
     description: 'Pomodoro, mozzarella, longaniza artesanal y cebolla caramelizada.',
     icon: '🍕',
     type: 'pizza',
-    image: '',
+    image: 'assets/pizza_longaniza.jpg',
     badge: 'De la casa'
   },
   {
@@ -85,7 +85,7 @@ const PRODUCTS = [
     description: 'Pomodoro, mozzarella, salsa pesto de albahaca, champiñón y oliva.',
     icon: '🍕',
     type: 'pizza',
-    image: '',
+    image: 'assets/pizza_pesto.jpg',
     badge: 'Fresca'
   },
   {
@@ -95,7 +95,7 @@ const PRODUCTS = [
     description: 'Salsa BBQ ahumada, mozzarella, tocino crocante y cebolla.',
     icon: '🍕',
     type: 'pizza',
-    image: '',
+    image: 'assets/pizza_bbq.jpg',
     badge: 'Intensa'
   },
 
